@@ -13,6 +13,11 @@ result2 = mapping(test_vector, Nbps, 'qam'); %4-QAM ex
 
 figure
 scatter(result,zeros(size(result)))
+title('PAM constellation diagram')
+xL = xlim;
+yL = ylim;
+line([0 0], yL);  %x-axis
+line(xL, [0 0]);  %y-axis
 
 test = demapping(result, Nbps, 'pam')
 test2 = demapping(result2, Nbps, 'qam')
@@ -23,7 +28,13 @@ result3 = mapping(test_vector2, Nbps2, 'qam');
 
 % figure
 % plot(result2,'x')
+% title('QAM constellation diagram')
 % xL = xlim;
 % yL = ylim;
 % line([0 0], yL);  %x-axis
 % line(xL, [0 0]);  %y-axis
+
+%% b) Nyquist filter
+%Start from formula in theory
+%Can also implement fir - see pdf
+
