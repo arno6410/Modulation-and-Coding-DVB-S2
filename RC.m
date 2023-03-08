@@ -23,7 +23,7 @@ for i=1:length(inpf)
 
     elseif (1-b)/(2*Tsymbol) <= abs(f) && abs(f) <= (1+b)/(2*Tsymbol)
 
-        filtered = [filtered inpf(i) .* Tsymbol/2*((1+cos((pi*Tsymbol/b)*(abs(f)-(1-b)/(2*Tsymbol)))))];
+        filtered = [filtered inpf(i) * Tsymbol/2*(1 + cos( (pi*Tsymbol/b)*(abs(f) - ((1-b)/(2*Tsymbol)) )))];
 
     elseif (1+b)/(2*Tsymbol) < abs(f)
 
@@ -42,7 +42,7 @@ plot(filtered)
 title('spectrum of filter')
 
  % spectrum shifted
-filtershifted = fftshift(filtered);
+filtershifted = ifftshift(filtered);
 figure
 plot(filtershifted)
 title('spectrum of filter shifted')
@@ -56,17 +56,19 @@ title('time signal of shifted spectrum')
 
 
 % terug shiften in tijdsdomein
-ifiltershifted = ifftshift(ifftfilter);
+ifiltershifted = fftshift(ifftfilter/ifftfilter(1));
 figure
 plot(t,ifiltershifted)
 
-x = 0:Ts:(N-1)*Ts;
+x = 0:Tsymbol:(N-1)*Ts;
+
 
 hold on
 plot(x,zeros(1,length(x)),'x')
 
 title('impulse response after shift')
-
+ 
+ 
 
 
 

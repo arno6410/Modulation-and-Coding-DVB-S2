@@ -142,8 +142,8 @@ close all
 
 Tsymbol = 1/(1.5e6);
 
-test = zeros(1,50);
-test(25) = 1;
+test = zeros(1,101);
+test(51) = 1;
 
 RC(test,Tsymbol)
 
