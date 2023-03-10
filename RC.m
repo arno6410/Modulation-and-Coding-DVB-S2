@@ -1,6 +1,5 @@
 function [outp] = RC(inp,Tsymbol)
-%RRC Summary of this function goes here
-%   Detailed explanation goes here
+%RC Summary of this function goes here
 
 b = 0.3;
 fc = 1e6;  % cutoff freq
@@ -64,7 +63,7 @@ x = 0:Tsymbol:(N-1)*Ts;
 
 
 hold on
-plot(x,zeros(1,length(x)),'x')
+plot(x,zeros(1,length(x)),'.')
 
 title('impulse response after shift')
  

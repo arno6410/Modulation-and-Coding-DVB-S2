@@ -94,7 +94,7 @@ clear
 close all
 
 Tsymbol = 1e-6;  % symbol length
-M = 10;
+M = 5;
 
 %bit stream
 bits= randi([0 1], 1,8)'
@@ -145,8 +145,13 @@ Tsymbol = 1/(1.5e6);
 test = zeros(1,101);
 test(51) = 1;
 
-RC(test,Tsymbol)
+RRC(test,Tsymbol)
 
 
 % Vragen: wat is Tsymbol en Tsample nu en heo verhouden die zich to elkaar
+
+
+
+
+
 
