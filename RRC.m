@@ -1,4 +1,4 @@
-function [outp] = RRC(inp,Tsymbol)
+function [outp1,outp2] = RRC(inp,Tsymbol)
 %RRC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -11,7 +11,7 @@ Ts = 1/Fs;
 t = 0:1/Fs:(N-1)*Ts ;
 inpf = abs(fft(inp,N));  %fft
 
-H_RC = [];
+H_factors = [];
 
 for i=1:length(inpf)
 
@@ -19,15 +19,15 @@ for i=1:length(inpf)
 
     if  abs(f) <= (1-b)/(2*Tsymbol)
 
-        H_RC = [H_RC inpf(i).*Tsymbol];
+        H_factors = [H_factors Tsymbol];
 
     elseif (1-b)/(2*Tsymbol) <= abs(f) && abs(f) <= (1+b)/(2*Tsymbol)
 
-        H_RC = [H_RC inpf(i) * Tsymbol/2*(1 + cos( (pi*Tsymbol/b)*(abs(f) - ((1-b)/(2*Tsymbol)) )))];
+        H_factors = [H_factors Tsymbol/2*(1 + cos( (pi*Tsymbol/b)*(abs(f) - ((1-b)/(2*Tsymbol)) )))];
 
     elseif (1+b)/(2*Tsymbol) < abs(f)
 
-        H_RC =  [H_RC 0];
+        H_factors =  [H_factors 0];
 
     end
 end
@@ -35,7 +35,7 @@ end
 % Real check
 % ISI
 
-
+H_RC = H_factors .* inpf;
 
 figure
 plot(H_RC)
@@ -63,17 +63,16 @@ h_RC = fftshift(h_RC/h_RC(1));
 figure
 plot(t,h_RC)
 
+
 x = 0:Tsymbol:(N-1)*Ts;
-
-
 hold on
 plot(x,zeros(1,length(x)),'.')
-
 title('impulse response after shift')
  
  
 
-outp = h_RC;
+outp1 = h_RC;
+outp2 = h_RRC;
 
 end
 
