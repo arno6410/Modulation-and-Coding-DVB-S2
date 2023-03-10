@@ -71,8 +71,8 @@ title('impulse response after shift')
  
  
 
-outp1 = h_RC;
-outp2 = h_RRC;
+outp1 = h_RRC;
+outp2 = H_RRC;
 
 end
 

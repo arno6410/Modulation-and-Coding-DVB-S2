@@ -93,11 +93,11 @@ clc
 clear
 close all
 
-Tsymbol = 1e-6;  % symbol length
+Tsymbol = 1/(1.5e6);  % symbol length
 M = 5;
 
 %bit stream
-bits= randi([0 1], 1,8)'
+bits = randi([0 1], 1,40)'
 
 %QAM-16 modulation
 mappedbits = mapping(bits,4,'qam')
@@ -106,7 +106,15 @@ mappedbits = mapping(bits,4,'qam')
 tx =  sampler(mappedbits,M,'up');
 
 % apply RRC 
-ty = RRC(tx,Tsymbol)
+impulse = zeros(1,23);
+impulse(12) = 1;
+
+            % RRC(impulse,Tsymbol)
+
+[h,H] = RRC(impulse,Tsymbol);
+
+es = conv(tx,fliplr(h)); %ik denk als we da flippen da het dan zo g(-t) is?
+
 
 %%% Channel %%%
 
@@ -117,13 +125,19 @@ ty = RRC(tx,Tsymbol)
 % Rx %
 
 % Apply RRC again
-ry = RRC(ty,Tsymbol);
+%ry = RRC(ty,Tsymbol);
+ry = conv(es,h);
 
 % Downsampling
 rx =  sampler(ry,M,'down')';
 
 % QAM-16 demodulation
 receivedbits = demapping(rx,4,'qam')
+
+figure
+stem(bits)
+hold on
+stem(receivedbits)
 
 %% sampler test
 
