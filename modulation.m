@@ -95,6 +95,7 @@ close all
 
 Tsymbol = 1/(1.5e6);  % symbol length
 M = 5;
+N = 51;
 
 %bit stream
 bits = randi([0 1], 1,40)'
@@ -103,17 +104,17 @@ bits = randi([0 1], 1,40)'
 mappedbits = mapping(bits,4,'qam')
 
 % Upsample function
-tx =  sampler(mappedbits,M,'up');
+tx = sampler(mappedbits,M,'up');
 
 % apply RRC 
-impulse = zeros(1,23);
-impulse(12) = 1;
+impulse = zeros(1,N);
+impulse((N+1)/2) = 1;
 
             % RRC(impulse,Tsymbol)
 
 [h,H] = RRC(impulse,Tsymbol);
 
-es = conv(tx,fliplr(h)); %ik denk als we da flippen da het dan zo g(-t) is?
+es = conv(tx,h); %ik denk als we da flippen da het dan zo g(-t) is?
 
 
 %%% Channel %%%
@@ -126,18 +127,38 @@ es = conv(tx,fliplr(h)); %ik denk als we da flippen da het dan zo g(-t) is?
 
 % Apply RRC again
 %ry = RRC(ty,Tsymbol);
-ry = conv(es,h);
+ry = conv(es,fliplr(h));
+cropped_filtered_signal_ry = ry(N:end-(N-1));
 
 % Downsampling
-rx =  sampler(ry,M,'down')';
+rx =  sampler(cropped_filtered_signal_ry,M,'down')';
 
 % QAM-16 demodulation
 receivedbits = demapping(rx,4,'qam')
+
+%langer dan bits???
 
 figure
 stem(bits)
 hold on
 stem(receivedbits)
+
+% Tsymbol = 1/(1e6);
+% 
+% test = zeros(21,1);
+% test(12) = 1;
+% 
+% [x,y] = RRC(test,Tsymbol);
+% 
+% RCtest = conv(H,test);
+% 
+% RRCtest = conv(h,test);
+% RRCtest = conv(h,RRCtest);
+% 
+% figure
+% stem(RCtest)
+% hold on
+% stem(RRCtest)
 
 %% sampler test
 

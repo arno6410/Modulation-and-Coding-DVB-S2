@@ -62,17 +62,18 @@ h_RRC = fftshift(h_RRC/sqrt(h_RC(1)));
 h_RC = fftshift(h_RC/h_RC(1)); 
 figure
 plot(t,h_RC)
-
-
+hold on
+plot(t,h_RRC)
 x = 0:Tsymbol:(N-1)*Ts;
 hold on
 plot(x,zeros(1,length(x)),'.')
 title('impulse response after shift')
+legend('h_{RC}','h_{RRC}','zeros every T_{symbol}')
  
  
 
-outp1 = h_RRC;
-outp2 = H_RRC;
+outp2 = h_RRC;
+outp1 = h_RC;
 
 end
 
