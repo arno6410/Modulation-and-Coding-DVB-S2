@@ -37,38 +37,38 @@ end
 
 H_RC = H_factors .* inpf;
 
-figure
-plot(H_RC)
-title('spectrum of filter')
+% figure
+% plot(H_RC)
+% title('spectrum of filter')
 
  % spectrum shifted
 H_RC = ifftshift(H_RC);
 H_RRC = sqrt(H_RC);
-figure
-plot(H_RC)
-title('spectrum of filter shifted')
+% figure
+% plot(H_RC)
+% title('spectrum of filter shifted')
 
 
 % ifft van dat spectrum
 h_RC = ifft(H_RC);
 h_RRC = ifft(H_RRC);
-figure
-plot(t,h_RC)
-title('time signal of shifted spectrum')
+% figure
+% plot(t,h_RC)
+% title('time signal of shifted spectrum')
 
 
 % terug shiften in tijdsdomein
 h_RRC = fftshift(h_RRC/sqrt(h_RC(1)));
 h_RC = fftshift(h_RC/h_RC(1)); 
-figure
-plot(t,h_RC)
-hold on
-plot(t,h_RRC)
-x = 0:Tsymbol:(N-1)*Ts;
-hold on
-plot(x,zeros(1,length(x)),'.')
-title('impulse response after shift')
-legend('h_{RC}','h_{RRC}','zeros every T_{symbol}')
+% figure
+% plot(t,h_RC)
+% hold on
+% plot(t,h_RRC)
+% x = 0:Tsymbol:(N-1)*Ts;
+% hold on
+% plot(x,zeros(1,length(x)),'.')
+% title('impulse response after shift')
+% legend('h_{RC}','h_{RRC}','zeros every T_{symbol}')
  
  
 

@@ -4,7 +4,7 @@ close all
 
 %% PAM
 
-bits= [1 0 0 1 1 0 1 0 1 0 0 1]';
+bits= [1 0 0 1 1 0 1 0 1 0 0 1].';
 
 Nbps = 2;
 
@@ -35,7 +35,7 @@ clc
 clear
 close all
 
-bits= [1 0 0 1 1 0 1 0 1 0 0 1 1 1 0 1]';
+bits= [1 0 0 1 1 0 1 0 ].'
 
 Nbps = 2;
 
@@ -53,8 +53,12 @@ figure
 stem(mappedbits)
 title(['bitstream after QAM-' num2str(2^Nbps) ' mapping'])
 
-demappedbits = demapping(mappedbits,Nbps,'qam');
+% % sampling
+% x =  sampler(mappedbits,5,'up');
+% y =  sampler(x,5,'down');
 
+demappedbits = demapping(mappedbits,Nbps,'qam')
+%demappedbits = demapping(y,Nbps,'qam')
 figure
 stem(demappedbits)
 title(['mapped bitstream after QAM-' num2str(2^Nbps) ' demapping'])
@@ -69,7 +73,7 @@ clear
 close all
 
 %tx
-bits= [1 0 1 1 0 0 1 0]'
+bits = [1 0 0 1 0 1 1 0].'
 %QAM mod
 mappedbits = mapping(bits,4,'qam');
 %Upsample
@@ -93,72 +97,75 @@ clc
 clear
 close all
 
-Tsymbol = 1/(1.5e6);  % symbol length
-M = 5;
-N = 51;
+
+Tsymbol = 1/(1e6);  % symbol length
+M = 10;
+Nbps = 2;           %number of bits per symbol
+Fs = 3e6;           %sampling frequency
+% EbN0 = 5;           %energy per bit to noise power spectral density ratio
+EbN0 = 1:0.05:20;
+finalbits = [];
+
+bits = randi([0 1], 1,20).'
+
+for i=1:length(EbN0)
+
 
 %bit stream
-bits = randi([0 1], 1,40)'
 
-%QAM-16 modulation
-mappedbits = mapping(bits,4,'qam')
+%bits = [1 0 0 1 0 1 0 0].'
 
-% Upsample function
-tx = sampler(mappedbits,M,'up');
+%QAM mod
+mappedbits = mapping(bits,Nbps,'qam');
 
-% apply RRC 
-impulse = zeros(1,N);
-impulse((N+1)/2) = 1;
+%Upsample
+x =  sampler(mappedbits,M,'up').';
 
-            % RRC(impulse,Tsymbol)
+%Filter
 
-[h,H] = RRC(impulse,Tsymbol);
+[~,filter] = RC(x,Tsymbol);
 
-es = conv(tx,h); %ik denk als we da flippen da het dan zo g(-t) is?
+RRCtest = conv(x,filter,'same');
 
+%Noise
 
-%%% Channel %%%
+RRCtestNoisy = AWGNoise(RRCtest,1/Fs,Nbps,EbN0(i));
 
-% Apply AWGN
-%y = awgn(x,20,'measured');  % SNR = 20dB idk wat measured voor staat
-% zelf implementeren
+%Filter
 
-% Rx %
+RRCy = conv(RRCtestNoisy,filter,'same');
 
-% Apply RRC again
-%ry = RRC(ty,Tsymbol);
-ry = conv(es,fliplr(h));
-cropped_filtered_signal_ry = ry(N:end-(N-1));
+%Downsample
+y =  sampler(RRCy,M,'down');
 
-% Downsampling
-rx =  sampler(cropped_filtered_signal_ry,M,'down')';
+%QAM demod
+receivedbits = demapping(y,Nbps,'qam');
 
-% QAM-16 demodulation
-receivedbits = demapping(rx,4,'qam')
+finalbits = [finalbits,receivedbits];
+close all
+end
 
-%langer dan bits???
+numberOfErrors = [];
+for i=1:length(EbN0)
+    numberOfErrors = [numberOfErrors biterr(finalbits(:,i) ,bits)/length(bits)];
+end
+
 
 figure
-stem(bits)
-hold on
-stem(receivedbits)
-
-% Tsymbol = 1/(1e6);
-% 
-% test = zeros(21,1);
-% test(12) = 1;
-% 
-% [x,y] = RRC(test,Tsymbol);
-% 
-% RCtest = conv(H,test);
-% 
-% RRCtest = conv(h,test);
-% RRCtest = conv(h,RRCtest);
+plot(EbN0,numberOfErrors)
+% figure
+% stem(bits)
+% hold on
+% stem(receivedbits)
 % 
 % figure
-% stem(RCtest)
+% plot(mappedbits,'x')
 % hold on
-% stem(RRCtest)
+% plot(y,'.')
+% figure
+% plot(RRCy,'.')
+
+
 
 %% sampler test
 
@@ -175,18 +182,23 @@ clear
 clc
 close all
 
-Tsymbol = 1/(1.5e6);
+Tsymbol = 1/(1e6);
 
-test = zeros(1,101);
-test(51) = 1;
+test = zeros(20,1);
+test(12) = 1;
 
-RRC(test,Tsymbol)
+[x,y] = RC(test,Tsymbol);
 
+RCtest = conv(x,test);
 
-% Vragen: wat is Tsymbol en Tsample nu en heo verhouden die zich to elkaar
+RRCtest = conv(test,y);
+RRCtest = conv(RRCtest,y,"same")/2.5;
 
-
-
-
+figure
+plot(RCtest)
+hold on
+plot(RRCtest)
+%plot(circshift(RRCtest/2.54,-50))
+title('lets see if it works')
 
 
