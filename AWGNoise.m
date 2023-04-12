@@ -1,16 +1,18 @@
-function y = AWGNoise(x,Tsamp,Nbits,ratio)
-%ratio = Eb/N0
+function y = AWGNoise(x,Fs,Fsymbol,Nbps,ratio,modulation)
+%ratio = Eb/N0 in dB!!!
 
-% Calculate values
-Eb = (Tsamp/2*Nbits) * sum(x);
-N0 = Eb/ratio;
+power_signal = rms(x)^2;
+Eb = power_signal/(Nbps*Fsymbol);  % Energy per bit
+N0 = Eb/10^(ratio/10);
 
-% Calculate noise
-gaussnoiseRE = normrnd(0,1,size(x));
-gaussnoiseIM = normrnd(0,1,size(x));
-noise = sqrt(N0/Tsamp)*(gaussnoiseRE+1j*gaussnoiseIM);
+Re_noise = randn(length(x),1)*sqrt(N0*Fs);
 
-% Add noise
-y = x + noise;
+switch modulation
+    case 'pam'
+    y = x + Re_noise;
+    case 'qam'
+    Im_noise = randn(length(x),1)*sqrt(N0*Fs);
+    y = x + Re_noise + 1j*Im_noise;
+end
 
 end

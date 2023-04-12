@@ -22,17 +22,16 @@ switch modulation,
         int_det = round(int_rx);
         int_det(find(int_det<0)) = 0;
         int_det(find(int_det>2^Nbps-1)) = 2^Nbps-1;
-
+    
         % Integer to binary
-        mapp_rx  = fliplr(de2bi(int_det));
-
+        mapp_rx  = fliplr(de2bi(real(int_det)));
         % Binary to gray
         bit_rx2(:,1) = mapp_rx(:,1);
         for ii = 2:Nbps,
             bit_rx2(:,ii) = xor( mapp_rx(:,ii-1) , mapp_rx(:,ii) );
         end
 
-        bit_rx = reshape(bit_rx2',Nsymb*Nbps,1);
+        bit_rx = reshape(bit_rx2',Nsymb*Nbps,[]); %Nsymb*Nbps
 
     case 'qam'
 
