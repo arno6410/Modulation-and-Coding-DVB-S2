@@ -1,5 +1,0 @@
-function bloc_o = tanner(y, syndrome, m,H)
-
-    % Compute error pattern
-bloc_o = (sum(xor(syndrome,m).*H) + y) > sum(H)/2;
-end

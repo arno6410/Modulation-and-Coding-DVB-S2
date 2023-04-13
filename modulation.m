@@ -37,7 +37,7 @@ close all
 
 bits = randi([0 1],1, 12000).';
 
-Nbps = 6;
+Nbps = 4;
 
 % figure
 % stem(bits)
@@ -45,18 +45,18 @@ Nbps = 6;
 
 mappedbits = mapping(bits,Nbps,'qam');
 
-% figure
-% plot(mappedbits,'o')
-% title('constellation diagram QAM')
-% 
-% figure
-% stem(mappedbits)
-% title(['bitstream after QAM-' num2str(2^Nbps) ' mapping'])
+figure
+plot(mappedbits,'o')
+title('constellation diagram QAM')
+
+figure
+stem(mappedbits)
+title(['bitstream after QAM-' num2str(2^Nbps) ' mapping'])
 
 demappedbits = demapping(mappedbits,Nbps,'qam');
-% figure
-% stem(demappedbits)
-% title(['mapped bitstream after QAM-' num2str(2^Nbps) ' demapping'])
+figure
+stem(demappedbits)
+title(['mapped bitstream after QAM-' num2str(2^Nbps) ' demapping'])
 
 error = norm(bits - demappedbits,1);
 BER = error/length(bits);
@@ -77,13 +77,13 @@ BERmatrix = zeros(length(Nbps),length(SNREb));
 
 filter = RRC(1/Fsymbol,N,Fs,0.3);
 
-% figure
-%t = 0:1/Fs:(N-1)/Fs;
-% plot(t,conv(filter,filter,"same"))
-% hold on
-% x = 0:1/Fsymbol:(N-1)/Fs;
-% plot(x,zeros(length(x)),'*')
-% title("RRC * RRC filter")
+figure
+t = 0:1/Fs:(N-1)/Fs;
+plot(t,conv(filter,filter,"same"))
+hold on
+x = 0:1/Fsymbol:(N-1)/Fs;
+plot(x,zeros(length(x)),'*')
+title("RRC * RRC filter")
 
 bits = randi([0 1],1, 1200000).';
 
@@ -186,7 +186,7 @@ close all
 Fsymbol = 1e6;  % symbols/s
 M = 10;
 Fs = M*Fsymbol;   % sample freq
-N = 1003;   % oneven -> real , even -> complex god weet wrm
+N = 201;   % oneven -> real , even -> complex god weet wrm
 Nbps = [1,2,4,6];
 SNREb = -2:1:10;
 Modulation = 'pam';
@@ -196,7 +196,7 @@ filter = RRC(1/Fsymbol,N,Fs,0.3);
 
 % Encode bits
 BlockSize = 128;
-n_Blocks = 128;
+n_Blocks = 96;
 code_rate = 1/2;
 og_bits = randi([0 1],1, BlockSize*n_Blocks).';
 bits = og_bits;
@@ -260,7 +260,7 @@ for k=1:height(BERmatrix)
 end
 
 hold off
-title('BER in function of Eb/N0 + Hard decoding BPSK')
+title('BER in function of Eb/N0 + Hard decoding 64QAM')
 ylabel('BER')
 xlabel('Eb/N0 [dB]')
 legend('No encoding','1 iteration','2 iterations','5 iterations','10 iterations','20 iterations')

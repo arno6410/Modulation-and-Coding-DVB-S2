@@ -39,16 +39,23 @@ t = 0:1/Fs:(N-1)*Ts ;
 
 figure
 plot(H)
-title('Spectrum of Raised Cosine')
+title('Frequency response Raised Cosine filter')
 
 figure
-plot(t,fftshift(ifft(ifftshift(H./amplitude^2))),'LineWidth',1);
+H_RRC = fftshift(ifft(ifftshift(H./amplitude^2)));
+plot(t,H_RRC,'LineWidth',1);
 x = 0:Tsymbol:(N-1)*Ts;
+middle = x((end+1)/2);
+x((end+1)/2) = [];
 hold on
 plot(t,outpRRC,'LineWidth',1);
 hold on
 plot(x,zeros(1,length(x)),'x','LineWidth',2)
-title('Impulse response Raised Cosine')
+hold on
+plot(middle,1,'x','LineWidth',2);
+% plot(t,H_RRC,'x','MarkerIndices',1:1/Fs:length(x)+1)
+title('Impulse response Raised Cosine filter')
+legend('Raised Cosine','Root Raised Cosine','Sampled every Tsymbol')
 
 
 end
